@@ -1,54 +1,62 @@
 import Results from '@/components/Results';
+
 const API_KEY = process.env.API_KEY;
+
 export default async function Home() {
+  // 1) TMDB'den trending movies
   const res = await fetch(
     `https://api.themoviedb.org/3/trending/all/week?api_key=${API_KEY}&language=en-US&page=1`
   );
-  const data = await res.json();
+
   if (!res.ok) {
-    throw new Error('Failed to fetch data');
+    throw new Error('Failed to fetch TMDB data');
   }
-  const results = data.results;
+
+  const data = await res.json();
+  const trendingResults = data.results;
+
+  // 2) Kendi backend'den homepage content
   let homePageContent = null;
+
   try {
-    const results = await fetch(process.env.URL + '/api/homepagecontent/get', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      cache: 'no-store',
-    });
+    const apiRes = await fetch(
+      `${process.env.URL}/api/homepagecontent/get`,
+      {
+        method: 'GET', // body göndermiyorsan GET daha uygun
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store', // her istekte güncel data
+      }
+    );
 
-    if (!results.ok) {
-      throw new Error('Failed to fetch data');
+    if (!apiRes.ok) {
+      throw new Error('Failed to fetch homepage content');
     }
 
-    const text = await results.text();
-    if (text) {
-      const data = JSON.parse(text);
-      homePageContent = data[0] || null;
-    } else {
-      console.log('Empty response');
-    }
+    const homePageData = await apiRes.json();
+    homePageContent = homePageData[0] || null;
   } catch (error) {
-    console.log('Error getting the home page content', error);
+    console.error('Error getting the home page content:', error);
   }
 
+  // 3) Render
   return (
     <div>
       {homePageContent && (
-        <div className='text-center mb-10 max-w-6xl mx-auto py-10'>
-          <h1 className='text-4xl font-extrabold mb-4 bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent'>
+        <div className="text-center mb-10 max-w-6xl mx-auto py-10">
+          <h1 className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent">
             {homePageContent.title}
           </h1>
           <div
-          className='sm:text-lg p-4'
+            className="sm:text-lg p-4"
             dangerouslySetInnerHTML={{ __html: homePageContent.description }}
-          ></div>
+          />
         </div>
       )}
+
       <div>
-        <Results results={results} />
+        <Results results={trendingResults} />
       </div>
     </div>
   );
