@@ -20,12 +20,13 @@ export default async function Home() {
 
   // 2) Kendi backend'den homepage content
   let homePageContent = null;
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
 
   try {
     const apiRes = await fetch(
-      `${process.env.URL}/api/homepagecontent/get`,
+      `${baseUrl}/api/homepagecontent/get`,
       {
-        method: 'GET', // body göndermiyorsan GET daha uygun
+        method: 'POST', // body göndermiyorsan GET daha uygun
         headers: {
           'Content-Type': 'application/json',
         },
