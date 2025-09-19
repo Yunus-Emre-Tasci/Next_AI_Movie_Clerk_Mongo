@@ -21,9 +21,11 @@ export const createOrUpdateUser = async (
       },
       { upsert: true, new: true }
     );
+    console.log("✅ User created/updated:", user);
     return user;
   } catch (error) {
-    console.log('Error: Could not create or update user:', error);
+    console.error("❌ Error: Could not create or update user");
+    console.error(error?.message || error);
   }
 };
 export const deleteUser = async (id) => {
