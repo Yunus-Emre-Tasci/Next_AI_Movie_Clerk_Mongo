@@ -2,7 +2,6 @@
 
 import Results from '@/components/Results';
 import { useEffect, useState } from 'react';
-
 import { useUser } from '@clerk/nextjs';
 
 export default function Favorites() {

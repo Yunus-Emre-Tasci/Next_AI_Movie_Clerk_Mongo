@@ -1,11 +1,9 @@
 // export const dynamic = "force-dynamic";
-
-
 import Results from '@/components/Results';
 
-const API_KEY = process.env.API_KEY;
+ const API_KEY = process.env.API_KEY;
 
-export default async function Home() {
+ export default async function Home() {
   // 1) TMDB'den trending movies
   const res = await fetch(
     `https://api.themoviedb.org/3/trending/all/week?api_key=${API_KEY}&language=en-US&page=1`
